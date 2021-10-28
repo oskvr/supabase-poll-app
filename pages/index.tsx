@@ -54,8 +54,6 @@ const Home: NextPage = () => {
         }
       })
     );
-
-    // setPollOptions(pollOptions => {...pollOptions, [e.target.name]: e.target.value})
   }
 
   function handleOptionDelete(optionId: string) {

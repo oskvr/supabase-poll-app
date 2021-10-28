@@ -1,24 +1,12 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextRouter } from "next/router";
 import { useEffect, useState } from "react";
+import { Poll } from "./models/poll";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_KEY
 );
-
-interface Poll {
-  id: string;
-  created_at: string;
-  title: string;
-  options: PollOption[];
-}
-
-interface PollOption {
-  id: number;
-  created_at: string;
-  description: string;
-}
 
 export function usePoll(id: any) {
   const [poll, setPoll] = useState<Poll>();
