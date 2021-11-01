@@ -12,7 +12,7 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { SyntheticEvent, useState } from "react";
+import { SyntheticEvent, useEffect, useState } from "react";
 import { BsTrashFill } from "react-icons/bs";
 import { v4 as uuidv4 } from "uuid";
 import { createPollAsync } from "../lib/supabaseStore";
