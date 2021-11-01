@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import { usePoll } from "../../lib/supabaseStore";
+import { createVoteAsync, usePoll } from "../../lib/supabaseStore";
 import {
   Heading,
   Spinner,
@@ -20,26 +20,33 @@ export default function Poll() {
   const router = useRouter();
   const { id } = router.query;
   const poll = usePoll(id);
-  const [selectedOption, setSelectedOption] = useState<PollOption>();
-
+  const [selectedOptionId, setSelectedOptionId] = useState(0);
+  const [voteCount, setVoteCount] = useState(0);
   const maxSelectedOptions = 3;
 
   useEffect(() => {
-    //console.log(poll);
+    poll?.options.map((option) => {
+      return setVoteCount(() => voteCount + option.votes.length);
+    });
   }, [id, poll]);
 
   if (!poll) {
     return <Spinner size="lg" position="absolute" top="50%" left="50%" />;
   }
 
-  function handleSubmit() {
-    console.log(selectedOption);
+  async function handleSubmit() {
+    const res = await createVoteAsync(selectedOptionId, "127.0.0.1");
+    console.log(res);
   }
 
   return (
     <Box pt="10">
       <Box maxW="container.lg" mx="auto" mt="10">
-        {<Heading>{poll?.title}</Heading>}
+        {
+          <Heading>
+            {poll?.title} (Total votes: {voteCount})
+          </Heading>
+        }
         <small>{`Poll created at ${poll.created_at}`}</small>
         <RadioGroup pt="10">
           {poll.options.map((option, index) => (
@@ -54,7 +61,7 @@ export default function Poll() {
                 cursor="pointer"
                 transition="0.2s"
                 value={option.description}
-                onChange={() => setSelectedOption(option)}
+                onChange={() => setSelectedOptionId(+option.id)}
               >
                 {option.description}
               </Radio>
@@ -72,10 +79,7 @@ export default function Poll() {
             </HStack>
           ))}
         </RadioGroup>
-        <Button
-          my="5"
-          onClick={() => console.log("Submitting", selectedOption?.id)}
-        >
+        <Button my="5" onClick={handleSubmit}>
           Submit vote
         </Button>
       </Box>

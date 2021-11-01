@@ -22,7 +22,8 @@
   "include": [
     "next-env.d.ts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    "pages/poll/[id].tsx.old"
   ],
   "exclude": [
     "node_modules"

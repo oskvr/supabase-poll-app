@@ -22,14 +22,13 @@ interface PollOption {
   id: string;
   description: string;
 }
-const defaultPollOptions: PollOption[] = [
+const defaultPollOptions: any[] = [
   { id: uuidv4(), description: "" },
   { id: uuidv4(), description: "" },
   { id: uuidv4(), description: "" },
 ];
 const Home: NextPage = () => {
-  const [pollOptions, setPollOptions] =
-    useState<PollOption[]>(defaultPollOptions);
+  const [pollOptions, setPollOptions] = useState<any[]>(defaultPollOptions);
   const [title, setTitle] = useState("");
   const validPollOptions = pollOptions.filter((option) => option.description);
   const isSubmittable = validPollOptions.length >= 2 && title;

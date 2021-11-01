@@ -1,11 +1,11 @@
-export interface Poll {
-  id: string;
-  created_at: string;
+import BaseEntity from "./baseEntity";
+import { Vote } from "./vote";
+
+export interface Poll extends BaseEntity {
   title: string;
   options: PollOption[];
 }
-export interface PollOption {
-  id: number | string;
-  created_at?: string;
+export interface PollOption extends BaseEntity {
   description: string;
+  votes: Vote[];
 }
