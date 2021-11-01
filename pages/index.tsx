@@ -29,13 +29,22 @@ const Home: NextPage = () => {
   const [pollOptions, setPollOptions] =
     useState<PollOption[]>(defaultPollOptions);
   const [title, setTitle] = useState("");
-  const [error, setError] = useState("");
   const validPollOptions = pollOptions.filter((option) => option.description);
   const isSubmittable = validPollOptions.length >= 2 && title;
   const hideDeleteButton = pollOptions.length <= 2;
+  const [canAddOptions, setCanAddOptions] = useState(true);
+  const maxOptions = 5;
   const router = useRouter();
+
+  useEffect(() => {
+    pollOptions.length >= maxOptions ?? 5
+      ? setCanAddOptions(false)
+      : setCanAddOptions(true);
+  }, [pollOptions]);
+
   function addNewOption(e: SyntheticEvent) {
     e.preventDefault();
+
     setPollOptions(() => [...pollOptions, { id: uuidv4(), description: "" }]);
   }
 
@@ -59,6 +68,7 @@ const Home: NextPage = () => {
 
   async function handlePollSubmit(e: SyntheticEvent) {
     e.preventDefault();
+
     if (pollOptions.length <= 2) {
       alert("Poll needs at least two options");
       return;
@@ -71,11 +81,12 @@ const Home: NextPage = () => {
         alert("Poll needs at least two options");
         return;
       }
-      setError("");
       const res = await createPollAsync(title, validPollOptions);
-      router.push(`/poll/${res.body[0].id}`);
-    } else {
-      setError("Poll needs a title");
+      try {
+        router.push(`/poll/${res.body[0].id}`);
+      } catch (error) {
+        console.error(error);
+      }
     }
   }
 
@@ -86,15 +97,14 @@ const Home: NextPage = () => {
         <Box mb="10">
           <InputGroup>
             <Input
+              fontSize={25}
               variant="flushed"
               placeholder="Title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
             />
           </InputGroup>
-          <Text as="span" d="block" color="red.500" fontSize="sm">
-            {error}
-          </Text>
+          <Text as="span" d="block" color="red.500" fontSize="sm"></Text>
         </Box>
         {pollOptions.map((option, index) => (
           <List key={option.id} my={3}>
@@ -115,6 +125,7 @@ const Home: NextPage = () => {
                     size="xs"
                     colorScheme="red"
                     onClick={() => handleOptionDelete(option.id)}
+                    tabIndex={-1}
                   />
                 </InputRightElement>
               </InputGroup>
@@ -122,7 +133,14 @@ const Home: NextPage = () => {
           </List>
         ))}
         <Box>
-          <Button onClick={addNewOption}>Add new option</Button>
+          <Button
+            onClick={addNewOption}
+            colorScheme="messenger"
+            type="button"
+            disabled={!canAddOptions}
+          >
+            Add new option
+          </Button>
         </Box>
         <Button colorScheme="blue" type="submit" disabled={!isSubmittable}>
           Create
