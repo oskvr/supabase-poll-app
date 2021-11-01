@@ -29,7 +29,7 @@ export default function Poll() {
   }, [id, poll]);
 
   if (!poll) {
-    return <Spinner />;
+    return <Spinner size="lg" position="absolute" top="50%" left="50%" />;
   }
 
   function handleSubmit() {
