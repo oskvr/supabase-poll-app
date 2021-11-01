@@ -1,26 +1,21 @@
 import {
   Box,
   Button,
-  Input,
-  Divider,
   Heading,
-  List,
-  ListItem,
+  IconButton,
+  Input,
   InputGroup,
   InputRightElement,
-  IconButton,
+  List,
+  ListItem,
   Text,
-  Tooltip,
 } from "@chakra-ui/react";
-import { v4 as uuidv4 } from "uuid";
 import type { NextPage } from "next";
-import Head from "next/head";
-import Image from "next/image";
-import { BsTrashFill } from "react-icons/bs";
-import { SyntheticEvent, useState } from "react";
-import { createPollAsync } from "../lib/supabaseStore";
-import { addScaleCorrection } from "framer-motion";
 import { useRouter } from "next/router";
+import { SyntheticEvent, useState } from "react";
+import { BsTrashFill } from "react-icons/bs";
+import { v4 as uuidv4 } from "uuid";
+import { createPollAsync } from "../lib/supabaseStore";
 interface PollOption {
   id: string;
   description: string;

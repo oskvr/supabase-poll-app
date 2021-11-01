@@ -5,6 +5,7 @@ import {
   extendTheme,
   theme as defaultTheme,
 } from "@chakra-ui/react";
+import "focus-visible/dist/focus-visible";
 
 const theme = extendTheme({
   colors: {

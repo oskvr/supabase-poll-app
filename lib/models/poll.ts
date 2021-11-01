@@ -5,7 +5,7 @@ export interface Poll {
   options: PollOption[];
 }
 export interface PollOption {
-  id: number;
-  created_at: string;
+  id: number | string;
+  created_at?: string;
   description: string;
 }
