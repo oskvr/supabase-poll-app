@@ -6,6 +6,7 @@ import {
   theme as defaultTheme,
 } from "@chakra-ui/react";
 import "focus-visible/dist/focus-visible";
+import DarkModeButton from "../components/DarkModeButton";
 
 const theme = extendTheme({
   colors: {
@@ -20,6 +21,7 @@ const theme = extendTheme({
 function MyApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider theme={theme}>
+      <DarkModeButton />
       <Component {...pageProps} />
     </ChakraProvider>
   );
