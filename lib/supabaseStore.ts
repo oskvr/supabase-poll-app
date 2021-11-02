@@ -1,8 +1,6 @@
 import { createClient } from "@supabase/supabase-js";
-import { NextRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { Poll, PollOption } from "./models/poll";
-import { Vote } from "./models/vote";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -12,7 +10,8 @@ export const supabase = createClient(
 export function usePoll(id: any): Poll | undefined {
   const [poll, setPoll] = useState<Poll>();
   useEffect(() => {
-    getPollAsync(id).then(setPoll);
+    if(id)
+      getPollAsync(id).then(setPoll);
   }, [id]);
 
   return poll;
@@ -51,11 +50,15 @@ export async function createPollOptionsAsync(
   pollOptions: PollOption[],
   pollId: string
 ) {
-  pollOptions.map(async (option) => {
-    await supabase
-      .from("options")
-      .insert([{ description: option.description, poll_id: pollId }]);
-  });
+  try {
+    pollOptions.map(async (option) => {
+      await supabase
+        .from("options")
+        .insert([{ description: option.description, poll_id: pollId }]);
+    });
+  } catch (error) {
+    console.error(error)
+  }
 }
 
 export async function createVoteAsync(

@@ -13,6 +13,7 @@ import {
   Radio,
   RadioGroup,
   Button,
+  Center
 } from "@chakra-ui/react";
 import { PollOption } from "../../../lib/models/poll";
 
@@ -31,7 +32,11 @@ export default function Poll() {
   }, [id, poll]);
 
   if (!poll) {
-    return <Spinner size="lg" position="absolute" top="50%" left="50%" />;
+    return (
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
+      </Center>
+    )
   }
 
   async function handleSubmit() {
