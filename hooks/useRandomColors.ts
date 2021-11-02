@@ -9,7 +9,7 @@ export default function useRandomColors(amount: number) {
       randomColors.push(rgb);
     }
     setColors(randomColors);
-  }, []);
+  }, [amount]);
   return colors;
 }
 
