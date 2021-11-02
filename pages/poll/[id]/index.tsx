@@ -13,75 +13,65 @@ import {
   Radio,
   RadioGroup,
   Button,
-  Center
+  Center,
 } from "@chakra-ui/react";
 import { PollOption } from "../../../lib/models/poll";
+import Chart from "../../../components/Chart";
 
 export default function Poll() {
   const router = useRouter();
   const { id } = router.query;
-  const poll = usePoll(id);
+  const { poll, totalVoteCount } = usePoll(id);
   const [selectedOptionId, setSelectedOptionId] = useState(0);
-  const [voteCount, setVoteCount] = useState(0);
   const maxSelectedOptions = 3;
-
-  useEffect(() => {
-    poll?.options.map((option) => {
-      return setVoteCount(() => voteCount + option.votes.length);
-    });
-  }, [id, poll]);
 
   if (!poll) {
     return (
       <Center w="100vw" h="100vh">
         <Spinner size="xl" />
       </Center>
-    )
+    );
   }
 
   async function handleSubmit() {
-    const res = await createVoteAsync(selectedOptionId, "127.0.0.1");
+    await createVoteAsync(selectedOptionId, "127.0.0.1");
     router.push(`/poll/${id}/voted`);
-    console.log(res);
   }
 
   return (
     <Box pt="10">
       <Box maxW="container.lg" mx="auto" mt="10">
-        {
-          <Heading>
-            {poll?.title} (Total votes: {voteCount})
-          </Heading>
-        }
-        <small>{`Poll created at ${poll.created_at}`}</small>
+        <Heading>{poll?.title}</Heading>
+        <Text as="small">
+          Created at{" "}
+          <Text as="span" color="gray.500">
+            {poll.created_at}
+          </Text>
+        </Text>
         <RadioGroup pt="10">
           {poll.options.map((option, index) => (
             <HStack
               key={option.id}
               rounded="md"
-              _hover={{ bg: "rgba(255,255,255,0.05)" }}
+              _hover={{
+                bg: "rgba(0,0,0,0.05)",
+                _dark: { bg: "rgba(255,255,255,0.1)" },
+              }}
             >
               <Radio
+                _hover={{
+                  borderColor: "rgba(0,0,0,0.3)",
+                  _dark: { borderColor: "rgba(255,255,255, 0.3)" },
+                }}
                 w="full"
                 p="3"
+                size="lg"
                 cursor="pointer"
-                transition="0.2s"
                 value={option.description}
                 onChange={() => setSelectedOptionId(+option.id)}
               >
                 {option.description}
               </Radio>
-              {/* <Checkbox
-                  id="checkbox-id"
-                  name={`${option.description}`}
-                  onChange={handleIsChecked}
-                  // isChecked={handleIsChecked}
-                  size="lg"
-                  >
-                  <Text as="span" ml="1">
-                  {option.description}
-                  </Text>
-                </Checkbox> */}
             </HStack>
           ))}
         </RadioGroup>

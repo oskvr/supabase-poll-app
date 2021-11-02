@@ -83,8 +83,9 @@ const Home: NextPage = () => {
         return;
       }
       const res = await createPollAsync(title, validPollOptions);
+      const pollId = res.body[0].id;
       try {
-        router.push(`/poll/${res.body[0].id}`);
+        router.push(`/poll/${pollId}`);
       } catch (error) {
         console.error(error);
       }

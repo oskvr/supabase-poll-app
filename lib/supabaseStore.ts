@@ -1,23 +1,55 @@
 import { createClient } from "@supabase/supabase-js";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import { urlToHttpOptions } from "url";
+import { useImmer } from "use-immer";
 import { Poll, PollOption } from "./models/poll";
+import { Vote } from "./models/vote";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_KEY
 );
 
-export function usePoll(id: any): Poll | undefined {
-  const [poll, setPoll] = useState<Poll>();
+export function usePoll(id: any) {
+  const [poll, setPoll] = useImmer<Poll | undefined>(undefined);
+
   useEffect(() => {
-    if(id)
-      getPollAsync(id).then(setPoll);
+    const pollListener = supabase
+      .from<Vote>("votes")
+      .on("INSERT", (payload) => {
+        handleNewVote(payload.new);
+      })
+      .subscribe();
+    return () => {
+      pollListener.unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    getPollAsync(id).then(setPoll);
   }, [id]);
 
-  return poll;
+  function handleNewVote(newVote: Vote) {
+    // Använder immer för att uppdatera enklare
+    setPoll((poll) => {
+      const optionToUpdate = poll?.options.find(
+        (option) => option.id === newVote.option_id
+      );
+      optionToUpdate?.votes.push(newVote);
+    });
+  }
+  function getTotalVoteCount() {
+    let sum = 0;
+    poll?.options.map((option) => {
+      sum += option.votes.length;
+    });
+    return sum;
+  }
+  return { poll, totalVoteCount: getTotalVoteCount() };
 }
 
 async function getPollAsync(id: string): Promise<Poll | undefined> {
+  if (!id) return;
   try {
     const res = await supabase
       .from("polls")
@@ -57,7 +89,7 @@ export async function createPollOptionsAsync(
         .insert([{ description: option.description, poll_id: pollId }]);
     });
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
