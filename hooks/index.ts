@@ -1,3 +1,5 @@
-import useRandomColors from "./useRandomColors";
+import useRandomColors from './useRandomColors'
+import useStandardColors from './useStandardColors'
 
-export { useRandomColors };
+export { useRandomColors }
+export { useStandardColors }
