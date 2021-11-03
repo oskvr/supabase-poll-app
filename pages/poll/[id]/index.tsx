@@ -1,22 +1,17 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { createVoteAsync, usePoll } from "../../../lib/supabaseStore";
+import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
-  Heading,
-  Spinner,
   Box,
-  List,
-  ListItem,
-  HStack,
-  Checkbox,
-  Text,
-  Radio,
-  RadioGroup,
   Button,
   Center,
+  Heading,
+  HStack,
+  Radio,
+  RadioGroup,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { PollOption } from "../../../lib/models/poll";
-import Chart from "../../../components/Chart";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 
 export default function Poll() {
   const router = useRouter();

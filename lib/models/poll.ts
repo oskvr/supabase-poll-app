@@ -2,6 +2,7 @@ import BaseEntity from "./baseEntity";
 import { Vote } from "./vote";
 
 export interface Poll extends BaseEntity {
+  isPrivate: boolean;
   title: string;
   options: PollOption[];
 }

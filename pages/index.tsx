@@ -1,31 +1,31 @@
-import { Center, Spinner } from '@chakra-ui/react'
-import { NextPage } from 'next'
-import { usePolls } from '../lib/supabaseStore'
+import { Center, Spinner } from "@chakra-ui/react";
+import { NextPage } from "next";
+import { usePolls } from "@/lib/supabaseStore";
 
 const LandingPage: NextPage = () => {
-  const polls = usePolls()
+  const polls = usePolls();
 
-  if (!polls.body) {
+  if (!polls) {
     return (
-      <Center w='100vw' h='100vh'>
-        <Spinner size='xl' />
+      <Center w="100vw" h="100vh">
+        <Spinner size="xl" />
       </Center>
-    )
+    );
   }
 
-  console.log(polls)
+  // console.log(polls);
 
   return (
     <div>
-      {polls.body.map(poll => {
+      {polls.map((poll) => {
         return (
           <li key={poll.id}>
             <p>{poll.title}</p>
           </li>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default LandingPage
+export default LandingPage;

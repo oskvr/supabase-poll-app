@@ -1,8 +1,8 @@
 import { Box, Center, Heading, Text } from "@chakra-ui/layout";
 import { Spinner } from "@chakra-ui/spinner";
 import { useRouter } from "next/router";
-import Chart from "../../../components/Chart";
-import { usePoll } from "../../../lib/supabaseStore";
+import Chart from "@/components/Chart";
+import { usePoll } from "@/lib/supabaseStore";
 
 export default function Results() {
   const router = useRouter();
