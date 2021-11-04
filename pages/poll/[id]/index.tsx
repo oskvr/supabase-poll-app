@@ -1,4 +1,3 @@
-import StatusIcon from "@/components/StatusIcon";
 import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
   Box,
@@ -38,18 +37,12 @@ export default function Poll() {
     <Box pt="10">
       <Box maxW="container.lg" mx="auto" mt="10">
         <Heading>{poll?.title}</Heading>
-        <HStack>
-          <Text as="small">
-            Created at{" "}
-            <Text as="span" color="gray.500">
-              {poll.created_at}
-            </Text>
+        <Text as="small">
+          Created at{" "}
+          <Text as="span" color="gray.500">
+            {poll.created_at}
           </Text>
-          <StatusIcon
-            isLive={!poll.is_closed}
-            label={poll.is_closed ? "Closed" : "Open"}
-          />
-        </HStack>
+        </Text>
         <RadioGroup pt="10">
           {poll.options.map((option, index) => (
             <HStack
