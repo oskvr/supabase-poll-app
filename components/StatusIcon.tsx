@@ -10,7 +10,7 @@ const ping = keyframes`
 export default function StatusIcon(props: { label?: string; isLive: boolean }) {
   const color = props.isLive ? "green.500" : "red.500";
   return (
-    <HStack>
+    <HStack spacing={1}>
       <Box bg={color} h="3" w="3" rounded="full" pos="relative">
         <Box
           animation={

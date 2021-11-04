@@ -11,14 +11,19 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
-export default function Poll() {
+export default function Poll(props: any) {
   const router = useRouter();
   const { id } = router.query;
   const { poll, totalVoteCount } = usePoll(id);
   const [selectedOptionId, setSelectedOptionId] = useState(0);
   const maxSelectedOptions = 3;
+
+  useEffect(() => {
+    console.log(props.ip);
+    // console.log(props.ip);
+  }, []);
 
   if (!poll) {
     return (
@@ -36,7 +41,8 @@ export default function Poll() {
   return (
     <Box pt="10">
       <Box maxW="container.lg" mx="auto" mt="10">
-        <Heading>{poll?.title}</Heading>
+        {/* <Heading>{poll?.title}</Heading> */}
+        <Heading>{props.ip && props.ip}</Heading>
         <Text as="small">
           Created at{" "}
           <Text as="span" color="gray.500">
@@ -76,4 +82,16 @@ export default function Poll() {
       </Box>
     </Box>
   );
+}
+
+export async function getServerSideProps({ req }: any) {
+  const forwarded = req.headers["x-forwarded-for"];
+  const ip = forwarded
+    ? forwarded.split(/, /)[0]
+    : req.connection.remoteAddress;
+  return {
+    props: {
+      ip,
+    },
+  };
 }
