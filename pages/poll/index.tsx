@@ -1,5 +1,5 @@
+import { UserValidationMode } from "@/lib/models/poll";
 import { createPollAsync } from "@/lib/supabaseStore";
-import { IPValidationType } from "@/lib/types";
 import {
   Box,
   Button,
@@ -18,7 +18,13 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { SyntheticEvent, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  FormEvent,
+  SyntheticEvent,
+  useEffect,
+  useState,
+} from "react";
 import { BsPlusCircle, BsTrashFill } from "react-icons/bs";
 import { v4 as uuidv4 } from "uuid";
 
@@ -28,7 +34,7 @@ const defaultPollOptions: any[] = [
   { id: uuidv4(), description: "" },
 ];
 
-const Home: NextPage = () => {
+const CreatePoll: NextPage = () => {
   const [pollOptions, setPollOptions] = useState<any[]>(defaultPollOptions);
   const [title, setTitle] = useState("");
   const validPollOptions = pollOptions.filter((option) => option.description);
@@ -41,7 +47,8 @@ const Home: NextPage = () => {
   // Switch Options
   const [privateVisibility, setPrivateVisibility] = useState(false);
   const [allowMultipleAnswers, setAllowMultipleAnswers] = useState(false);
-  const [validateUser, setValidateUser] = useState<IPValidationType>("IP");
+  const [userValidationMode, setUserValidationMode] =
+    useState<UserValidationMode>("IP");
 
   useEffect(() => {
     pollOptions.length >= maxOptions ?? 5
@@ -76,7 +83,7 @@ const Home: NextPage = () => {
   async function handlePollSubmit(e: SyntheticEvent) {
     e.preventDefault();
 
-    if (pollOptions.length <= 2) {
+    if (pollOptions.length < 2) {
       alert("Poll needs at least two options");
       return;
     }
@@ -89,9 +96,12 @@ const Home: NextPage = () => {
         return;
       }
       const res = await createPollAsync(
-        title,
-        validPollOptions,
-        privateVisibility
+        {
+          is_private: privateVisibility,
+          title,
+          user_validation_mode: userValidationMode,
+        },
+        validPollOptions
       );
       const pollId = res.body[0].id;
       try {
@@ -101,9 +111,9 @@ const Home: NextPage = () => {
       }
     }
   }
-  // LOL, funkar men går att göra finare
-  function handleSelectChange(e: any) {
-    setValidateUser(e.target.value);
+
+  function handleValidationModeChange(e: ChangeEvent<HTMLSelectElement>) {
+    setUserValidationMode(e.target.value as UserValidationMode);
   }
 
   return (
@@ -185,7 +195,11 @@ const Home: NextPage = () => {
               <p>Allow multiple answers</p>
             </Stack>
             <Stack direction="row" mb="3">
-              <Select variant="outline" onChange={handleSelectChange}>
+              <Select
+                defaultValue={userValidationMode}
+                variant="outline"
+                onChange={handleValidationModeChange}
+              >
                 <option value="IP">Check for duplicate IP address</option>
                 <option value="Browser">
                   Check for duplicate browser session
@@ -202,4 +216,4 @@ const Home: NextPage = () => {
   );
 };
 
-export default Home;
+export default CreatePoll;

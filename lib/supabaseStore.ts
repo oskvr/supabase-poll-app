@@ -1,8 +1,8 @@
 import { createClient } from "@supabase/supabase-js";
-import { useEffect, useState, useRef } from "react";
-import { urlToHttpOptions } from "url";
+import { TooltipModel } from "chart.js";
+import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
-import { Poll, PollOption } from "./models/poll";
+import { Poll, PollOption, PollCreateDto } from "./models/poll";
 import { Vote } from "./models/vote";
 
 export const supabase = createClient(
@@ -25,7 +25,7 @@ async function getPollsAsync() {
     const res = await supabase
       .from<Poll>("polls")
       .select("*")
-      .eq("isPrivate", "false");
+      .eq("is_private", "false");
     return res.body;
   } catch (error) {
     console.error(error);
@@ -52,7 +52,6 @@ export function usePoll(id: any) {
   }, [id]);
 
   function handleNewVote(newVote: Vote) {
-    // Använder immer för att uppdatera enklare
     setPoll((poll) => {
       const optionToUpdate = poll?.options.find(
         (option) => option.id === newVote.option_id
@@ -88,14 +87,12 @@ async function getPollAsync(id: string): Promise<Poll | undefined> {
 }
 
 export async function createPollAsync(
-  title: string,
-  pollOptions: PollOption[],
-  privateVisibility: boolean
+  poll: PollCreateDto,
+  pollOptions: PollOption[]
 ) {
   try {
-    const res: any = await supabase
-      .from("polls")
-      .insert([{ title: title, isPrivate: privateVisibility }]);
+    const res: any = await supabase.from("polls").insert([{ ...poll }]);
+    console.log(res);
     await createPollOptionsAsync(pollOptions, res.body[0].id);
     return res;
   } catch (error) {
@@ -129,7 +126,6 @@ export async function createVoteAsync(
     const res: any = await supabase
       .from("votes")
       .insert([{ option_id: optionId, ip_address: ipAddress }]);
-    // await createPollOptionsAsync(pollOptions, res.body[0].id);
     return res;
   } catch (error) {
     console.error(error);
