@@ -123,6 +123,9 @@ export async function createVoteAsync(
   pollId: any
 ) {
   try {
+    //Denna rad hämtar alla röst-objekt med samma ip address som ipAddress argumentet användaren ger
+    // const {data, error} = await supabase.from("votes").select("*").in("ip_address", [ipAddress])
+
     const res: any = await supabase.from("votes").insert([
       {
         option_id: selectedOption.id,
