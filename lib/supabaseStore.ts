@@ -92,7 +92,6 @@ export async function createPollAsync(
 ) {
   try {
     const res: any = await supabase.from("polls").insert([{ ...poll }]);
-    console.log(res);
     await createPollOptionsAsync(pollOptions, res.body[0].id);
     return res;
   } catch (error) {
@@ -119,13 +118,19 @@ export async function createPollOptionsAsync(
 }
 
 export async function createVoteAsync(
-  optionId: number | undefined,
-  ipAddress: string
+  selectedOption: PollOption,
+  ipAddress: string | undefined,
+  pollId: any
 ) {
   try {
-    const res: any = await supabase
-      .from("votes")
-      .insert([{ option_id: optionId, ip_address: ipAddress }]);
+    const res: any = await supabase.from("votes").insert([
+      {
+        option_id: selectedOption.id,
+        ip_address: ipAddress,
+      },
+    ]);
+    // const votes = await supabase.from("votes").select("*, options(*)");
+    // console.log(votes.body);
     return res;
   } catch (error) {
     console.error(error);

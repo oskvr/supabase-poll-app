@@ -1,3 +1,4 @@
+import { PollOption } from "@/lib/models/poll";
 import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
   Box,
@@ -16,14 +17,10 @@ import React, { useEffect, useState } from "react";
 export default function Poll(props: any) {
   const router = useRouter();
   const { id } = router.query;
+  const { userIp } = props;
   const { poll, totalVoteCount } = usePoll(id);
-  const [selectedOptionId, setSelectedOptionId] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<any>();
   const maxSelectedOptions = 3;
-
-  useEffect(() => {
-    console.log(props.ip);
-    // console.log(props.ip);
-  }, []);
 
   if (!poll) {
     return (
@@ -34,15 +31,14 @@ export default function Poll(props: any) {
   }
 
   async function handleSubmit() {
-    await createVoteAsync(selectedOptionId, "127.0.0.1");
+    await createVoteAsync(selectedOption, userIp, id);
     router.push(`/poll/${id}/voted`);
   }
 
   return (
     <Box pt="10">
       <Box maxW="container.lg" mx="auto" mt="10">
-        {/* <Heading>{poll?.title}</Heading> */}
-        <Heading>{props.ip && props.ip}</Heading>
+        <Heading>{poll?.title}</Heading>
         <Text as="small">
           Created at{" "}
           <Text as="span" color="gray.500">
@@ -69,7 +65,7 @@ export default function Poll(props: any) {
                 size="lg"
                 cursor="pointer"
                 value={option.description}
-                onChange={() => setSelectedOptionId(+option.id)}
+                onChange={() => setSelectedOption(option)}
               >
                 {option.description}
               </Radio>
@@ -91,7 +87,7 @@ export async function getServerSideProps({ req }: any) {
     : req.connection.remoteAddress;
   return {
     props: {
-      ip,
+      userIp: ip,
     },
   };
 }
