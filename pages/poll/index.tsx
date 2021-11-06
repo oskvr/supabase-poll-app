@@ -1,8 +1,10 @@
+import InfoPopover from "@/components/InfoPopover";
 import { UserValidationMode } from "@/lib/models/poll";
 import { createPollAsync } from "@/lib/supabaseStore";
 import {
   Box,
   Button,
+  FormControl,
   Heading,
   IconButton,
   Input,
@@ -15,11 +17,18 @@ import {
   Stack,
   Switch,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import { BsPlusCircle, BsTrashFill } from "react-icons/bs";
+import {
+  BsPlusCircle,
+  BsTrash,
+  BsTrash2,
+  BsTrash2Fill,
+  BsTrashFill,
+} from "react-icons/bs";
 
 let inputId = 1;
 const defaultPollOptions: any[] = [
@@ -71,33 +80,25 @@ const CreatePoll: NextPage = () => {
 
   async function handlePollSubmit(e: SyntheticEvent) {
     e.preventDefault();
-
-    if (pollOptions.length < 2) {
-      alert("Poll needs at least two options");
+    if (!title) return;
+    if (pollOptions.length < 2) return;
+    const validPollOptions = pollOptions.filter((option) => option.description);
+    if (validPollOptions.length < 2) {
       return;
     }
-    if (title) {
-      const validPollOptions = pollOptions.filter(
-        (option) => option.description
-      );
-      if (validPollOptions.length < 2) {
-        alert("Poll needs at least two options");
-        return;
-      }
-      const res = await createPollAsync(
-        {
-          is_private: privateVisibility,
-          title,
-          user_validation_mode: userValidationMode,
-        },
-        validPollOptions
-      );
-      const pollId = res.body[0].id;
-      try {
-        router.push(`/poll/${pollId}`);
-      } catch (error) {
-        console.error(error);
-      }
+    const res = await createPollAsync(
+      {
+        is_private: privateVisibility,
+        title,
+        user_validation_mode: userValidationMode,
+      },
+      validPollOptions
+    );
+    const pollId = res.body[0].id;
+    try {
+      router.push(`/poll/${pollId}`);
+    } catch (error) {
+      console.error(error);
     }
   }
 
@@ -110,7 +111,10 @@ const CreatePoll: NextPage = () => {
       <Box
         maxW="container.md"
         mx="auto"
-        boxShadow="base"
+        shadow="sm"
+        border="1px solid"
+        borderColor="gray.200"
+        _dark={{ borderColor: "gray.700" }}
         rounded="lg"
         p="10"
         my="10"
@@ -129,34 +133,32 @@ const CreatePoll: NextPage = () => {
             </InputGroup>
             <Text as="span" d="block" color="red.500" fontSize="sm"></Text>
           </Box>
-          {pollOptions.map((option, index) => (
-            <List key={option.id} my={3}>
-              <ListItem>
+          <List>
+            {pollOptions.map((option, index) => (
+              <ListItem key={option.id} mb="3">
                 <InputGroup>
                   <Input
                     value={option.description}
                     onChange={(e) =>
                       handleOptionChange(option.id, e.target.value)
                     }
-                    placeholder={option.id}
+                    placeholder={`Options ${index + 1}`}
                   />
                   <InputRightElement>
-                    <LightMode>
-                      <IconButton
-                        disabled={disableDeleteButton}
-                        aria-label="delete option"
-                        icon={<BsTrashFill />}
-                        size="md"
-                        roundedLeft="none"
-                        colorScheme="red"
-                        onClick={() => handleOptionDelete(option.id)}
-                      />
-                    </LightMode>
+                    <IconButton
+                      disabled={disableDeleteButton}
+                      aria-label="Delete option"
+                      icon={<BsTrash />}
+                      variant="ghost"
+                      roundedLeft="none"
+                      color="red.500"
+                      onClick={() => handleOptionDelete(option.id)}
+                    />
                   </InputRightElement>
                 </InputGroup>
               </ListItem>
-            </List>
-          ))}
+            ))}
+          </List>
           <Box className="addOptionBox" mb="3">
             <Button
               aria-label="Add new option"
@@ -170,19 +172,20 @@ const CreatePoll: NextPage = () => {
               Add new option
             </Button>
           </Box>
-          <Box className="switchOptionsBox" my="7">
-            <Stack direction="row" mb="3">
-              <Switch
-                onChange={() => setPrivateVisibility(!privateVisibility)}
-              />
-              <p>Make poll private</p>
-            </Stack>
-            <Stack direction="row" mb="3">
+          <VStack align="start" my="7">
+            <FormControl display="flex" alignItems="center">
+              <Switch onChange={() => setPrivateVisibility(!privateVisibility)}>
+                Make poll private
+              </Switch>
+              <InfoPopover>Poll will only be accessible by link</InfoPopover>
+            </FormControl>
+            <FormControl display="flex" alignItems="center">
               <Switch
                 onChange={() => setAllowMultipleAnswers(!allowMultipleAnswers)}
-              />
-              <p>Allow multiple answers</p>
-            </Stack>
+              >
+                Allow multiple answers
+              </Switch>
+            </FormControl>
             <Stack direction="row" mb="3">
               <Select
                 defaultValue={userValidationMode}
@@ -194,8 +197,17 @@ const CreatePoll: NextPage = () => {
                   Check for duplicate browser session
                 </option>
               </Select>
+              <InfoPopover>
+                <strong>IP Duplication Checking</strong> - Duplicate votes will
+                be disallowed based on the IP address of the user.
+                <br />
+                <br />
+                <strong>Browser Duplication Checking</strong> - Duplicate votes
+                will be disallowed based on the browser of the user, allowing
+                multiple votes from the same IP address.
+              </InfoPopover>
             </Stack>
-          </Box>
+          </VStack>
           <Button colorScheme="blue" type="submit" disabled={!isSubmittable}>
             Create poll
           </Button>

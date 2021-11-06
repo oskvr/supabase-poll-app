@@ -4,7 +4,7 @@ import {
   extendTheme,
   theme as defaultTheme,
 } from "@chakra-ui/react";
-// import "focus-visible";
+import "focus-visible";
 import DarkModeButton from "@/components/DarkModeButton";
 
 const theme = extendTheme({
