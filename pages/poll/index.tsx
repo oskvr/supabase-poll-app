@@ -18,20 +18,13 @@ import {
 } from "@chakra-ui/react";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import {
-  ChangeEvent,
-  FormEvent,
-  SyntheticEvent,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
 import { BsPlusCircle, BsTrashFill } from "react-icons/bs";
-import { v4 as uuidv4 } from "uuid";
 
+let inputId = 1;
 const defaultPollOptions: any[] = [
-  { id: uuidv4(), description: "" },
-  { id: uuidv4(), description: "" },
-  { id: uuidv4(), description: "" },
+  { id: inputId++, description: "" },
+  { id: inputId++, description: "" },
 ];
 
 const CreatePoll: NextPage = () => {
@@ -44,7 +37,6 @@ const CreatePoll: NextPage = () => {
   const maxOptions = 10;
   const router = useRouter();
 
-  // Switch Options
   const [privateVisibility, setPrivateVisibility] = useState(false);
   const [allowMultipleAnswers, setAllowMultipleAnswers] = useState(false);
   const [userValidationMode, setUserValidationMode] =
@@ -58,8 +50,7 @@ const CreatePoll: NextPage = () => {
 
   function addNewOption(e: SyntheticEvent) {
     e.preventDefault();
-
-    setPollOptions(() => [...pollOptions, { id: uuidv4(), description: "" }]);
+    setPollOptions(() => [...pollOptions, { id: inputId++, description: "" }]);
   }
 
   function handleOptionChange(optionId: string, text: string) {
@@ -75,9 +66,7 @@ const CreatePoll: NextPage = () => {
   }
 
   function handleOptionDelete(optionId: string) {
-    const newOptions = pollOptions.filter((i) => i.id !== optionId);
-
-    setPollOptions(newOptions);
+    setPollOptions(pollOptions.filter((i) => i.id !== optionId));
   }
 
   async function handlePollSubmit(e: SyntheticEvent) {
@@ -149,7 +138,7 @@ const CreatePoll: NextPage = () => {
                     onChange={(e) =>
                       handleOptionChange(option.id, e.target.value)
                     }
-                    placeholder={`Option ${index + 1}`}
+                    placeholder={option.id}
                   />
                   <InputRightElement>
                     <LightMode>

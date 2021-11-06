@@ -124,17 +124,35 @@ export async function createVoteAsync(
 ) {
   try {
     //Denna rad hämtar alla röst-objekt med samma ip address som ipAddress argumentet användaren ger
-    // const {data, error} = await supabase.from("votes").select("*").in("ip_address", [ipAddress])
-
-    const res: any = await supabase.from("votes").insert([
-      {
-        option_id: selectedOption.id,
-        ip_address: ipAddress,
-      },
-    ]);
-    // const votes = await supabase.from("votes").select("*, options(*)");
-    // console.log(votes.body);
-    return res;
+    const { data, error } = await supabase
+      .from("votes")
+      .select("*, options(poll_id, poll(user_validation_mode))");
+    // const validationMode = data?.forEach(vote=>{
+    //   if(vote.options.poll_id === pollId){
+    //     return vote.options.poll.user_validation_mode;
+    //   }
+    // })
+    let hasDuplicate = false;
+    data?.forEach((element) => {
+      if (
+        element.options.poll_id === pollId &&
+        element.ip_address === ipAddress
+      ) {
+        console.log("1. Detected duplicate vote");
+        hasDuplicate = true;
+        return;
+      }
+    });
+    if (!hasDuplicate) {
+      const res: any = await supabase.from("votes").insert([
+        {
+          option_id: selectedOption.id,
+          ip_address: ipAddress,
+        },
+      ]);
+      console.log("2. No duplication");
+      return res || undefined;
+    }
   } catch (error) {
     console.error(error);
   }
