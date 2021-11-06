@@ -1,28 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import { createVoteAsync, usePoll } from "../../../lib/supabaseStore";
+import { PollOption } from "@/lib/models/poll";
+import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
-  Heading,
-  Spinner,
   Box,
-  List,
-  ListItem,
-  HStack,
-  Checkbox,
-  Text,
-  Radio,
-  RadioGroup,
   Button,
   Center,
+  Heading,
+  HStack,
+  Radio,
+  RadioGroup,
+  Spinner,
+  Text,
 } from "@chakra-ui/react";
-import { PollOption } from "../../../lib/models/poll";
-import Chart from "../../../components/Chart";
+import { useRouter } from "next/router";
+import React, { useEffect, useState } from "react";
 
-export default function Poll() {
+export default function Poll(props: any) {
   const router = useRouter();
   const { id } = router.query;
+  const { userIp } = props;
   const { poll, totalVoteCount } = usePoll(id);
-  const [selectedOptionId, setSelectedOptionId] = useState(0);
+  const [selectedOption, setSelectedOption] = useState<any>();
   const maxSelectedOptions = 3;
 
   if (!poll) {
@@ -34,7 +31,7 @@ export default function Poll() {
   }
 
   async function handleSubmit() {
-    await createVoteAsync(selectedOptionId, "127.0.0.1");
+    await createVoteAsync(selectedOption, userIp, id);
     router.push(`/poll/${id}/voted`);
   }
 
@@ -68,7 +65,7 @@ export default function Poll() {
                 size="lg"
                 cursor="pointer"
                 value={option.description}
-                onChange={() => setSelectedOptionId(+option.id)}
+                onChange={() => setSelectedOption(option)}
               >
                 {option.description}
               </Radio>
@@ -81,4 +78,16 @@ export default function Poll() {
       </Box>
     </Box>
   );
+}
+
+export async function getServerSideProps({ req }: any) {
+  const forwarded = req.headers["x-forwarded-for"];
+  const ip = forwarded
+    ? forwarded.split(/, /)[0]
+    : req.connection.remoteAddress;
+  return {
+    props: {
+      userIp: ip,
+    },
+  };
 }

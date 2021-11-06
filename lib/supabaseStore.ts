@@ -1,105 +1,101 @@
-import { createClient } from '@supabase/supabase-js'
-import { useEffect, useState, useRef } from 'react'
-import { urlToHttpOptions } from 'url'
-import { useImmer } from 'use-immer'
-import { Poll, PollOption } from './models/poll'
-import { Vote } from './models/vote'
+import { createClient } from "@supabase/supabase-js";
+import { TooltipModel } from "chart.js";
+import { useEffect, useState } from "react";
+import { useImmer } from "use-immer";
+import { Poll, PollOption, PollCreateDto } from "./models/poll";
+import { Vote } from "./models/vote";
 
 export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
   process.env.NEXT_PUBLIC_SUPABASE_KEY
-)
+);
 
 export function usePolls() {
-  const [polls, setPolls] = useState([])
+  const [polls, setPolls] = useState<Poll[] | null>();
 
   useEffect(() => {
-    getPollsAsync().then(setPolls)
-  }, [])
+    getPollsAsync().then(setPolls);
+  }, []);
 
-  return polls
+  return polls;
 }
 
-async function getPollsAsync(): Promise<any> {
+async function getPollsAsync() {
   try {
     const res = await supabase
-      .from('polls')
-      .select('*')
-      .eq('isPrivate', 'false')
-    return res
+      .from<Poll>("polls")
+      .select("*")
+      .eq("is_private", "false");
+    return res.body;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 export function usePoll(id: any) {
-  const [poll, setPoll] = useImmer<Poll | undefined>(undefined)
+  const [poll, setPoll] = useImmer<Poll | undefined>(undefined);
 
   useEffect(() => {
     const pollListener = supabase
-      .from<Vote>('votes')
-      .on('INSERT', payload => {
-        handleNewVote(payload.new)
+      .from<Vote>("votes")
+      .on("INSERT", (payload) => {
+        handleNewVote(payload.new);
       })
-      .subscribe()
+      .subscribe();
     return () => {
-      pollListener.unsubscribe()
-    }
-  }, [])
+      pollListener.unsubscribe();
+    };
+  }, []);
 
   useEffect(() => {
-    getPollAsync(id).then(setPoll)
-  }, [id])
+    getPollAsync(id).then(setPoll);
+  }, [id]);
 
   function handleNewVote(newVote: Vote) {
-    // Använder immer för att uppdatera enklare
-    setPoll(poll => {
+    setPoll((poll) => {
       const optionToUpdate = poll?.options.find(
-        option => option.id === newVote.option_id
-      )
-      optionToUpdate?.votes.push(newVote)
-    })
+        (option) => option.id === newVote.option_id
+      );
+      optionToUpdate?.votes.push(newVote);
+    });
   }
   function getTotalVoteCount() {
-    let sum = 0
-    poll?.options.map(option => {
-      sum += option.votes.length
-    })
-    return sum
+    let sum = 0;
+    poll?.options.map((option) => {
+      sum += option.votes.length;
+    });
+    return sum;
   }
-  return { poll, totalVoteCount: getTotalVoteCount() }
+  return { poll, totalVoteCount: getTotalVoteCount() };
 }
 
 async function getPollAsync(id: string): Promise<Poll | undefined> {
-  if (!id) return
+  if (!id) return;
   try {
     const res = await supabase
-      .from('polls')
-      .select('*, options(*, votes(*))')
-      .eq('id', id)
-      .single()
-    let poll: Poll = res.body
-    const betterDate = new Date(poll.created_at).toLocaleString()
-    poll.created_at = betterDate
-    return poll
+      .from("polls")
+      .select("*, options(*, votes(*))")
+      .eq("id", id)
+      .single();
+    let poll: Poll = res.body;
+    const betterDate = new Date(poll.created_at).toLocaleString();
+    poll.created_at = betterDate;
+    return poll;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 export async function createPollAsync(
-  title: string,
-  pollOptions: PollOption[],
-  privateVisibility: boolean
+  poll: PollCreateDto,
+  pollOptions: PollOption[]
 ) {
   try {
-    const res: any = await supabase
-      .from('polls')
-      .insert([{ title: title, isPrivate: privateVisibility }])
-    await createPollOptionsAsync(pollOptions, res.body[0].id)
-    return res
+    const res: any = await supabase.from("polls").insert([{ ...poll }]);
+    await createPollOptionsAsync(pollOptions, res.body[0].id);
+    return res;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
@@ -108,30 +104,38 @@ export async function createPollOptionsAsync(
   pollId: string
 ) {
   try {
-    pollOptions.map(async option => {
-      await supabase.from('options').insert([
+    pollOptions.map(async (option) => {
+      await supabase.from("options").insert([
         {
           description: option.description,
           poll_id: pollId,
         },
-      ])
-    })
+      ]);
+    });
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
 
 export async function createVoteAsync(
-  optionId: number | undefined,
-  ipAddress: string
+  selectedOption: PollOption,
+  ipAddress: string | undefined,
+  pollId: any
 ) {
   try {
-    const res: any = await supabase
-      .from('votes')
-      .insert([{ option_id: optionId, ip_address: ipAddress }])
-    // await createPollOptionsAsync(pollOptions, res.body[0].id);
-    return res
+    //Denna rad hämtar alla röst-objekt med samma ip address som ipAddress argumentet användaren ger
+    // const {data, error} = await supabase.from("votes").select("*").in("ip_address", [ipAddress])
+
+    const res: any = await supabase.from("votes").insert([
+      {
+        option_id: selectedOption.id,
+        ip_address: ipAddress,
+      },
+    ]);
+    // const votes = await supabase.from("votes").select("*, options(*)");
+    // console.log(votes.body);
+    return res;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }

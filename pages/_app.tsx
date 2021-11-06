@@ -1,4 +1,3 @@
-import "../styles/globals.css";
 import type { AppProps } from "next/app";
 import {
   ChakraProvider,
@@ -6,7 +5,7 @@ import {
   theme as defaultTheme,
 } from "@chakra-ui/react";
 // import "focus-visible";
-import DarkModeButton from "../components/DarkModeButton";
+import DarkModeButton from "@/components/DarkModeButton";
 
 const theme = extendTheme({
   colors: {
