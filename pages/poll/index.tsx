@@ -1,6 +1,5 @@
 import InfoPopover from "@/components/InfoPopover";
-import { UserValidationMode } from "@/lib/models/poll";
-import { createPollAsync } from "@/lib/supabaseStore";
+import ShareButton from "@/components/ShareButton";
 import {
   Box,
   Button,
@@ -10,7 +9,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  LightMode,
   List,
   ListItem,
   Select,
@@ -19,93 +17,27 @@ import {
   Text,
   VStack,
 } from "@chakra-ui/react";
+import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
+import { useCreatePollForm } from "hooks";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
-import { ChangeEvent, SyntheticEvent, useEffect, useState } from "react";
-import {
-  BsPlusCircle,
-  BsTrash,
-  BsTrash2,
-  BsTrash2Fill,
-  BsTrashFill,
-} from "react-icons/bs";
-
-let inputId = 1;
-const defaultPollOptions: any[] = [
-  { id: inputId++, description: "" },
-  { id: inputId++, description: "" },
-];
+import { BsPlusCircle, BsTrash } from "react-icons/bs";
 
 const CreatePoll: NextPage = () => {
-  const [pollOptions, setPollOptions] = useState<any[]>(defaultPollOptions);
-  const [title, setTitle] = useState("");
-  const validPollOptions = pollOptions.filter((option) => option.description);
-  const isSubmittable = validPollOptions.length >= 2 && title;
+  const {
+    pollOptions,
+    handleDelete,
+    handleNewOption,
+    handleOptionChange,
+    handleSubmit,
+    handleValidationModeChange,
+    toggleMultipleAnswers,
+    togglePrivateVisibility,
+    isSubmittable,
+    title,
+    setTitle,
+  } = useCreatePollForm();
+
   const disableDeleteButton = pollOptions.length <= 2;
-  const [canAddOptions, setCanAddOptions] = useState(true);
-  const maxOptions = 10;
-  const router = useRouter();
-
-  const [privateVisibility, setPrivateVisibility] = useState(false);
-  const [allowMultipleAnswers, setAllowMultipleAnswers] = useState(false);
-  const [userValidationMode, setUserValidationMode] =
-    useState<UserValidationMode>("IP");
-
-  useEffect(() => {
-    pollOptions.length >= maxOptions ?? 5
-      ? setCanAddOptions(false)
-      : setCanAddOptions(true);
-  }, [pollOptions]);
-
-  function addNewOption(e: SyntheticEvent) {
-    e.preventDefault();
-    setPollOptions(() => [...pollOptions, { id: inputId++, description: "" }]);
-  }
-
-  function handleOptionChange(optionId: string, text: string) {
-    setPollOptions(
-      pollOptions.map((option) => {
-        if (option.id === optionId) {
-          return { ...option, description: text };
-        } else {
-          return option;
-        }
-      })
-    );
-  }
-
-  function handleOptionDelete(optionId: string) {
-    setPollOptions(pollOptions.filter((i) => i.id !== optionId));
-  }
-
-  async function handlePollSubmit(e: SyntheticEvent) {
-    e.preventDefault();
-    if (!title) return;
-    if (pollOptions.length < 2) return;
-    const validPollOptions = pollOptions.filter((option) => option.description);
-    if (validPollOptions.length < 2) {
-      return;
-    }
-    const res = await createPollAsync(
-      {
-        is_private: privateVisibility,
-        title,
-        user_validation_mode: userValidationMode,
-      },
-      validPollOptions
-    );
-    const pollId = res.body[0].id;
-    try {
-      router.push(`/poll/${pollId}`);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  function handleValidationModeChange(e: ChangeEvent<HTMLSelectElement>) {
-    setUserValidationMode(e.target.value as UserValidationMode);
-  }
-
   return (
     <Box overflow="auto">
       <Box
@@ -120,7 +52,7 @@ const CreatePoll: NextPage = () => {
         my="10"
       >
         <Heading mb={10}>Create poll</Heading>
-        <form onSubmit={handlePollSubmit}>
+        <form onSubmit={handleSubmit}>
           <Box mb="10">
             <InputGroup>
               <Input
@@ -135,7 +67,11 @@ const CreatePoll: NextPage = () => {
           </Box>
           <List>
             {pollOptions.map((option, index) => (
-              <ListItem key={option.id} mb="3">
+              <ListItem
+                key={option.id}
+                // transition={{ type: "spring", stiffness: "100" }}
+                mb="3"
+              >
                 <InputGroup>
                   <Input
                     value={option.description}
@@ -152,43 +88,42 @@ const CreatePoll: NextPage = () => {
                       variant="ghost"
                       roundedLeft="none"
                       color="red.500"
-                      onClick={() => handleOptionDelete(option.id)}
+                      onClick={() => handleDelete(option.id)}
                     />
                   </InputRightElement>
                 </InputGroup>
               </ListItem>
             ))}
           </List>
+          {/* </AnimateSharedLayout> */}
           <Box className="addOptionBox" mb="3">
             <Button
               aria-label="Add new option"
               size="sm"
               variant="ghost"
               leftIcon={<BsPlusCircle />}
-              onClick={addNewOption}
+              onClick={handleNewOption}
               type="button"
-              disabled={!canAddOptions}
+              // disabled={!canAddOptions}
             >
               Add new option
             </Button>
           </Box>
           <VStack align="start" my="7">
             <FormControl display="flex" alignItems="center">
-              <Switch onChange={() => setPrivateVisibility(!privateVisibility)}>
+              <Switch onChange={togglePrivateVisibility}>
                 Make poll private
               </Switch>
               <InfoPopover>Poll will only be accessible by link</InfoPopover>
             </FormControl>
             <FormControl display="flex" alignItems="center">
-              <Switch
-                onChange={() => setAllowMultipleAnswers(!allowMultipleAnswers)}
-              >
+              <Switch onChange={toggleMultipleAnswers}>
                 Allow multiple answers
               </Switch>
             </FormControl>
             <Stack direction="row" mb="3">
               <Select
-                defaultValue={userValidationMode}
+                defaultValue={"IP"}
                 variant="outline"
                 onChange={handleValidationModeChange}
               >
@@ -213,6 +148,7 @@ const CreatePoll: NextPage = () => {
           </Button>
         </form>
       </Box>
+      <ShareButton text="Share result" textAfterCopy="Link copied" />
     </Box>
   );
 };

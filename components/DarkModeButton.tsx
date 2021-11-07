@@ -15,9 +15,9 @@ export default function DarkModeButton() {
       color={isDarkMode ? "yellow.500" : "inherit"}
       icon={isDarkMode ? <BsSunFill /> : <BsFillMoonFill />}
       onClick={toggleColorMode}
-      position="absolute"
-      top="2"
-      right="2"
+      pos="absolute"
+      top="4"
+      right="3"
     >
       Toggle theme
     </IconButton>

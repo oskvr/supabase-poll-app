@@ -24,7 +24,7 @@ async function getPollsAsync() {
   try {
     const res = await supabase
       .from<Poll>("polls")
-      .select("*")
+      .select("*, options(*, votes(*))")
       .eq("is_private", "false");
     return res.body;
   } catch (error) {

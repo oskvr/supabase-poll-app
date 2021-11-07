@@ -14,7 +14,7 @@ export default function StatusIcon(props: { label?: string; isLive: boolean }) {
       <Box bg={color} h="3" w="3" rounded="full" pos="relative">
         <Box
           animation={
-            props.isLive ? `${ping} 1s cubic-bezier(0, 0, 0.2, 1) infinite` : ""
+            props.isLive ? `${ping} 2s cubic-bezier(0, 0, 0.2, 1) infinite` : ""
           }
           pos="absolute"
           top="0"

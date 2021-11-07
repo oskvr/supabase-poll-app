@@ -20,6 +20,7 @@ export default function Poll(props: any) {
   const { userIp } = props;
   const { poll, totalVoteCount } = usePoll(id);
   const [selectedOption, setSelectedOption] = useState<any>();
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const maxSelectedOptions = 3;
 
   if (!poll) {
@@ -31,8 +32,13 @@ export default function Poll(props: any) {
   }
 
   async function handleSubmit() {
-    await createVoteAsync(selectedOption, userIp, id);
-    router.push(`/poll/${id}/voted`);
+    if (!selectedOption) return;
+    const res = await createVoteAsync(selectedOption, userIp, id);
+    if (res) {
+      router.push(`/poll/${id}/voted`);
+    } else {
+      setErrorMsg("");
+    }
   }
 
   return (
@@ -72,9 +78,12 @@ export default function Poll(props: any) {
             </HStack>
           ))}
         </RadioGroup>
-        <Button my="5" onClick={handleSubmit}>
-          Submit vote
-        </Button>
+        <HStack>
+          <Button my="5" onClick={handleSubmit} disabled={!selectedOption}>
+            Submit vote
+          </Button>
+          <Text>{errorMsg}</Text>
+        </HStack>
       </Box>
     </Box>
   );
