@@ -366,7 +366,7 @@ const mockPolls: Poll[] = [
   },
 ];
 const LandingPage: NextPage = () => {
-  const polls = usePolls();
+  const polls = usePolls({ column: "title", isAscending: true });
 
   if (!polls) {
     return <PageSpinner />;

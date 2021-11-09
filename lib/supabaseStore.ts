@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import Voted from "pages/poll/[id]/voted";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import {
@@ -14,21 +15,28 @@ export const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_KEY
 );
 
-export function usePolls() {
+interface SortOptions {
+  column: keyof Poll;
+  isAscending: boolean;
+}
+export function usePolls(sortOptions?: SortOptions) {
   const [polls, setPolls] = useState<Poll[] | null>();
 
   useEffect(() => {
-    getPollsAsync().then(setPolls);
-  }, []);
+    getPollsAsync(sortOptions).then(setPolls);
+  }, [sortOptions]);
 
   return polls;
 }
 
-async function getPollsAsync() {
+async function getPollsAsync(sortOptions: SortOptions | undefined) {
   try {
     const res = await supabase
       .from<Poll>("polls")
       .select("*, options(*, votes(*))")
+      .order(sortOptions?.column || "created_at", {
+        ascending: sortOptions?.isAscending || false,
+      })
       .eq("is_private", "false");
     return res.body;
   } catch (error) {
@@ -177,7 +185,7 @@ export async function createVoteAsync(
 }
 
 export async function testSupabaseRPCFunction() {
-  const { data } = await supabase.rpc("get_total_votes");
+  const { data } = await supabase.rpc("get_test_2");
   console.log(data);
   return data;
 }
