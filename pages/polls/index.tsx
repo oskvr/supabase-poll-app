@@ -21,7 +21,7 @@ import { NextPage } from "next";
 import NextLink from "next/link";
 import StatusIcon from "@/components/StatusIcon";
 
-function PollItem({ poll }: { poll: Poll }) {
+export function PollListItem({ poll }: { poll: Poll }) {
   const betterDate = new Date(poll.created_at).toLocaleDateString();
   const totalVotes = getTotalVoteCount();
   function getTotalVoteCount() {
@@ -396,14 +396,14 @@ const LandingPage: NextPage = () => {
           <TabPanel>
             <List>
               {mockPolls.map((poll) => {
-                return <PollItem key={poll.id} poll={poll} />;
+                return <PollListItem key={poll.id} poll={poll} />;
               })}
             </List>
           </TabPanel>
           <TabPanel>
             <List>
               {polls.map((poll) => {
-                return <PollItem key={poll.id} poll={poll} />;
+                return <PollListItem key={poll.id} poll={poll} />;
               })}
             </List>
           </TabPanel>

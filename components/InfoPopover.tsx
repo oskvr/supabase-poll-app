@@ -12,7 +12,7 @@ import { BsInfoCircle, BsInfoCircleFill } from "react-icons/bs";
 
 export default function InfoPopover(props: any) {
   return (
-    <Popover colorScheme="blue">
+    <Popover trigger="click">
       <PopoverTrigger>
         <chakra.button
           type="button"

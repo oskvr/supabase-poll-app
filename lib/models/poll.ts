@@ -1,3 +1,4 @@
+import Poll from "pages/poll/[id]";
 import BaseEntity from "./baseEntity";
 import { Vote } from "./vote";
 
@@ -17,3 +18,5 @@ export interface PollOption extends BaseEntity {
   description: string;
   votes: Vote[];
 }
+
+export type PollSearchResult = Poll[] | undefined | null;

@@ -2,7 +2,12 @@ import { createClient } from "@supabase/supabase-js";
 import { TooltipModel } from "chart.js";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
-import { Poll, PollOption, PollCreateDto } from "./models/poll";
+import {
+  Poll,
+  PollOption,
+  PollCreateDto,
+  PollSearchResult,
+} from "./models/poll";
 import { Vote } from "./models/vote";
 
 export const supabase = createClient(
@@ -117,6 +122,20 @@ export async function createPollOptionsAsync(
   }
 }
 
+export async function searchPollAsync(
+  query: string
+): Promise<PollSearchResult> {
+  try {
+    const searchResults = await supabase
+      .from<Poll>("polls")
+      .select("*, options(*, votes(*))")
+      .ilike("title", `%${query}%`);
+    return searchResults.body;
+  } catch (error) {
+    console.error();
+  }
+}
+
 export async function createVoteAsync(
   selectedOption: PollOption,
   ipAddress: string | undefined,
@@ -156,4 +175,10 @@ export async function createVoteAsync(
   } catch (error) {
     console.error(error);
   }
+}
+
+export async function testSupabaseRPCFunction() {
+  const { data } = await supabase.rpc("get_total_votes");
+  console.log(data);
+  return data;
 }

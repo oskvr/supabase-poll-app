@@ -1,5 +1,6 @@
 import InfoPopover from "@/components/InfoPopover";
 import ShareButton from "@/components/ShareButton";
+import { testSupabaseRPCFunction } from "@/lib/supabaseStore";
 import {
   Box,
   Button,
@@ -20,6 +21,7 @@ import {
 import { AnimatePresence, AnimateSharedLayout, motion } from "framer-motion";
 import { useCreatePollForm } from "hooks";
 import type { NextPage } from "next";
+import { useEffect } from "react";
 import { BsPlusCircle, BsTrash } from "react-icons/bs";
 
 const CreatePoll: NextPage = () => {
@@ -38,6 +40,10 @@ const CreatePoll: NextPage = () => {
   } = useCreatePollForm();
 
   const disableDeleteButton = pollOptions.length <= 2;
+
+  useEffect(() => {
+    testSupabaseRPCFunction();
+  }, []);
   return (
     <Box overflow="auto">
       <Box
@@ -78,7 +84,7 @@ const CreatePoll: NextPage = () => {
                     onChange={(e) =>
                       handleOptionChange(option.id, e.target.value)
                     }
-                    placeholder={`Options ${index + 1}`}
+                    placeholder={`Option ${index + 1}`}
                   />
                   <InputRightElement>
                     <IconButton

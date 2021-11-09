@@ -25,7 +25,7 @@ export default function Poll(props: any) {
 
   if (!poll) {
     return (
-      <Center w="100vw" h="100vh">
+      <Center h="100vh" w="100vw">
         <Spinner size="xl" />
       </Center>
     );
