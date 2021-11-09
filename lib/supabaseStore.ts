@@ -1,11 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
-import { TooltipModel } from "chart.js";
 import { useEffect, useState } from "react";
 import { useImmer } from "use-immer";
 import {
   Poll,
-  PollOption,
   PollCreateDto,
+  PollOption,
   PollSearchResult,
 } from "./models/poll";
 import { Vote } from "./models/vote";

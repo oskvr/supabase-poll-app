@@ -1,7 +1,7 @@
+import PageSpinner from "@/components/PageSpinner";
 import { PollSearchResult } from "@/lib/models/poll";
 import { searchPollAsync } from "@/lib/supabaseStore";
-import { Box, Center, Heading, List, Text, VStack } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/spinner";
+import { Box, Heading, List, Text, VStack } from "@chakra-ui/layout";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import { PollListItem } from "..";
@@ -35,9 +35,7 @@ export default function Index() {
     );
   }
   if (!results) {
-    <Center>
-      <Spinner />
-    </Center>;
+    <PageSpinner />;
   }
   if (results?.length === 0) {
     return (

@@ -1,18 +1,16 @@
-import { PollOption } from "@/lib/models/poll";
+import PageSpinner from "@/components/PageSpinner";
 import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
   Box,
   Button,
-  Center,
   Heading,
   HStack,
   Radio,
   RadioGroup,
-  Spinner,
   Text,
 } from "@chakra-ui/react";
 import { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 export default function Poll(props: any) {
   const router = useRouter();
@@ -24,11 +22,7 @@ export default function Poll(props: any) {
   const maxSelectedOptions = 3;
 
   if (!poll) {
-    return (
-      <Center h="100vh" w="100vw">
-        <Spinner size="xl" />
-      </Center>
-    );
+    return <PageSpinner />;
   }
 
   async function handleSubmit() {

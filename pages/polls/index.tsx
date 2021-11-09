@@ -1,25 +1,24 @@
+import PageSpinner from "@/components/PageSpinner";
+import StatusIcon from "@/components/StatusIcon";
 import { Poll } from "@/lib/models/poll";
 import { usePolls } from "@/lib/supabaseStore";
 import {
   Box,
-  Center,
   Heading,
   HStack,
   Link,
   List,
   ListItem,
   Spacer,
-  Spinner,
-  Text,
   Tab,
-  Tabs,
   TabList,
-  TabPanels,
   TabPanel,
+  TabPanels,
+  Tabs,
+  Text,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NextLink from "next/link";
-import StatusIcon from "@/components/StatusIcon";
 
 export function PollListItem({ poll }: { poll: Poll }) {
   const betterDate = new Date(poll.created_at).toLocaleDateString();
@@ -370,11 +369,7 @@ const LandingPage: NextPage = () => {
   const polls = usePolls();
 
   if (!polls) {
-    return (
-      <Center w="100vw" h="100vh">
-        <Spinner size="xl" />
-      </Center>
-    );
+    return <PageSpinner />;
   }
 
   // console.log(polls);
