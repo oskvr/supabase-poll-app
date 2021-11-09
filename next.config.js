@@ -6,7 +6,7 @@ module.exports = {
       {
         source: "/",
         destination: "/poll",
-        permanent: true,
+        permanent: false,
       },
     ];
   },
