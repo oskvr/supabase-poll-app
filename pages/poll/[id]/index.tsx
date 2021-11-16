@@ -1,4 +1,5 @@
 import PageSpinner from "@/components/PageSpinner";
+import ShareButton from "@/components/ShareButton";
 import { createVoteAsync, usePoll } from "@/lib/supabaseStore";
 import {
   Box,
@@ -15,10 +16,11 @@ import React, { useState } from "react";
 export default function Poll(props: any) {
   const router = useRouter();
   const { id } = router.query;
-  const { userIp } = props;
+  const { userIp, browserDetails } = props;
   const { poll, totalVoteCount } = usePoll(id);
   const [selectedOption, setSelectedOption] = useState<any>();
   const [errorMsg, setErrorMsg] = useState<string>("");
+  const [duplicateVote, setDuplicateVote] = useState(false);
   const maxSelectedOptions = 3;
 
   if (!poll) {
@@ -27,11 +29,13 @@ export default function Poll(props: any) {
 
   async function handleSubmit() {
     if (!selectedOption) return;
-    const res = await createVoteAsync(selectedOption, userIp, id);
-    if (res) {
+    const hasDuplicate = await createVoteAsync(selectedOption, userIp, id);
+
+    if (!hasDuplicate) {
       router.push(`/poll/${id}/voted`);
     } else {
-      setErrorMsg("");
+      setDuplicateVote(true);
+      setErrorMsg("You can't vote on the same poll twice!");
     }
   }
 
@@ -73,10 +77,24 @@ export default function Poll(props: any) {
           ))}
         </RadioGroup>
         <HStack>
-          <Button my="5" onClick={handleSubmit} disabled={!selectedOption}>
-            Submit vote
-          </Button>
-          <Text>{errorMsg}</Text>
+          {!duplicateVote ? (
+            <Button my="5" onClick={handleSubmit} disabled={!selectedOption}>
+              Submit vote
+            </Button>
+          ) : (
+            <Button
+              my="5"
+              onClick={() => {
+                router.push(`/poll/${id}/results`);
+              }}
+            >
+              See Results
+            </Button>
+          )}
+
+          <Text color="red.300" px="2">
+            {errorMsg}
+          </Text>
         </HStack>
       </Box>
     </Box>

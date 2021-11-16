@@ -149,26 +149,37 @@ export async function createVoteAsync(
   pollId: any
 ) {
   try {
-    //Denna rad hämtar alla röst-objekt med samma ip address som ipAddress argumentet användaren ger
     const { data, error } = await supabase
       .from("votes")
-      .select("*, options(poll_id, poll(user_validation_mode))");
-    // const validationMode = data?.forEach(vote=>{
-    //   if(vote.options.poll_id === pollId){
-    //     return vote.options.poll.user_validation_mode;
-    //   }
-    // })
+      .select("ip_address, option_id(poll_id(id, user_validation_mode))")
+      .eq("ip_address", ipAddress);
+
+    const getValidationMode = (data: any) => {
+      let validation;
+      data?.forEach((vote: any) => {
+        const basePath = vote.option_id.poll_id;
+        if (basePath.id === pollId) {
+          validation = basePath.user_validation_mode;
+        }
+      });
+      return validation;
+    };
+
     let hasDuplicate = false;
-    data?.forEach((element) => {
-      if (
-        element.options.poll_id === pollId &&
-        element.ip_address === ipAddress
-      ) {
-        console.log("1. Detected duplicate vote");
-        hasDuplicate = true;
-        return;
-      }
-    });
+
+    const validation = getValidationMode(data);
+
+    if (validation === "IP") {
+      data?.forEach((element) => {
+        if (element.option_id.poll_id.id === pollId) {
+          hasDuplicate = true;
+          return;
+        }
+      });
+    } else if (validation === "Browser") {
+      console.log("Browser validation");
+    }
+
     if (!hasDuplicate) {
       const res: any = await supabase.from("votes").insert([
         {
@@ -176,8 +187,9 @@ export async function createVoteAsync(
           ip_address: ipAddress,
         },
       ]);
-      console.log("2. No duplication");
       return res || undefined;
+    } else {
+      return hasDuplicate;
     }
   } catch (error) {
     console.error(error);

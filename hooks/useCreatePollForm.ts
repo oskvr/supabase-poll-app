@@ -43,7 +43,7 @@ export default function useCreatePollForm() {
     try {
       router.push(`/poll/${pollId}`);
     } catch (error) {
-      console.error(error);
+      console.error("Error creating poll", error);
     }
   }
   function handleNewOption(e: SyntheticEvent) {
