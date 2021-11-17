@@ -31,12 +31,12 @@ export default function Poll(props: any) {
     if (!selectedOption) return;
     const hasDuplicate = await createVoteAsync(selectedOption, userIp, id);
 
-    if (!hasDuplicate) {
+    // if (!hasDuplicate) {
       router.push(`/poll/${id}/voted`);
-    } else {
-      setDuplicateVote(true);
-      setErrorMsg("You can't vote on the same poll twice!");
-    }
+    // } else {
+    //   setDuplicateVote(true);
+    //   setErrorMsg("You can't vote on the same poll twice!");
+    // }
   }
 
   return (

@@ -154,7 +154,7 @@ const CreatePoll: NextPage = () => {
           </Button>
         </form>
       </Box>
-      <ShareButton text="Share result" textAfterCopy="Link copied" />
+      {/* <ShareButton text="Share result" textAfterCopy="Link copied" /> */}
     </Box>
   );
 };
