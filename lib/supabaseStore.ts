@@ -145,55 +145,53 @@ export async function searchPollAsync(
 
 export async function createVoteAsync(
   selectedOption: PollOption,
-  ipAddress: string | undefined,
+  ipAddress: string | number,
   pollId: any
 ) {
-  try {
-    const { data, error } = await supabase
-      .from("votes")
-      .select("ip_address, option_id(poll_id(id, user_validation_mode))")
-      .eq("ip_address", ipAddress);
+  const { data, error } = await supabase
+    .from<Vote>("votes")
+    // .select("ip_address, option_id(poll_id(id, user_validation_mode))");
+    .select("*, options(*, polls(*))");
+  // .eq("ip_address", ipAddress)
+  //  eq("id", pollId)
 
-    const getValidationMode = (data: any) => {
-      let validation;
-      data?.forEach((vote: any) => {
-        const basePath = vote.option_id.poll_id;
-        if (basePath.id === pollId) {
-          validation = basePath.user_validation_mode;
-        }
-      });
-      return validation;
-    };
+  //TODO: skapa databasfunktion istället
 
-    let hasDuplicate = false;
+  const { data: poll } = await supabase
+    .from<Poll>("polls")
+    .select("*, options(*, votes(*))")
+    .eq("id", pollId)
+    .single();
 
-    const validation = getValidationMode(data);
-
-    if (validation === "IP") {
-      data?.forEach((element) => {
-        if (element.option_id.poll_id.id === pollId) {
-          hasDuplicate = true;
-          return;
-        }
-      });
-    } else if (validation === "Browser") {
-      console.log("Browser validation");
+  const validationMode = poll?.user_validation_mode;
+  let hasDuplicate = false;
+  if (validationMode === "IP") {
+    if (data) {
+      await Promise.all(
+        data.map(async (vote) => {
+          if (
+            vote.options.poll_id === pollId &&
+            vote.ip_address === ipAddress
+          ) {
+            hasDuplicate = true;
+            return;
+          }
+        })
+      );
     }
-
-    if (!hasDuplicate) {
-      const res: any = await supabase.from("votes").insert([
-        {
-          option_id: selectedOption.id,
-          ip_address: ipAddress,
-        },
-      ]);
-      return res || undefined;
-    } else {
-      return hasDuplicate;
-    }
-  } catch (error) {
-    console.error(error);
+  } else if (validationMode === "Browser") {
+    console.log("Browser validation");
   }
+  if (hasDuplicate) {
+    throw "You can't vote twice on the same poll";
+  }
+  const res: any = await supabase.from("votes").insert([
+    {
+      option_id: selectedOption.id,
+      ip_address: ipAddress,
+    },
+  ]);
+  return res;
 }
 
 export async function testSupabaseRPCFunction() {

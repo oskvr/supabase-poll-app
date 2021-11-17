@@ -15,6 +15,7 @@ export interface PollCreateDto
   extends Omit<Poll, "id" | "created_at" | "is_closed" | "options"> {}
 
 export interface PollOption extends BaseEntity {
+  poll_id: string;
   description: string;
   votes: Vote[];
 }

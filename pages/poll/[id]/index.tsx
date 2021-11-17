@@ -29,14 +29,14 @@ export default function Poll(props: any) {
 
   async function handleSubmit() {
     if (!selectedOption) return;
-    const hasDuplicate = await createVoteAsync(selectedOption, userIp, id);
 
-    // if (!hasDuplicate) {
+    try {
+      await createVoteAsync(selectedOption, userIp, id);
       router.push(`/poll/${id}/voted`);
-    // } else {
-    //   setDuplicateVote(true);
-    //   setErrorMsg("You can't vote on the same poll twice!");
-    // }
+    } catch (error) {
+      setErrorMsg(error as string);
+      setDuplicateVote(true);
+    }
   }
 
   return (
