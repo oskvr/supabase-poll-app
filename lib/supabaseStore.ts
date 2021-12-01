@@ -23,6 +23,11 @@ export function usePolls(sortOptions?: SortOptions) {
   const [polls, setPolls] = useState<Poll[] | null>();
 
   useEffect(() => {
+    // Osäker på den här.
+    // Tog iaf bort något memory leak error i konsolen när man navigerade från Discover till Create
+    return () => setPolls(null);
+  }, []);
+  useEffect(() => {
     getPollsAsync(sortOptions).then(setPolls);
   }, [sortOptions]);
 
@@ -196,6 +201,6 @@ export async function createVoteAsync(
 
 export async function testSupabaseRPCFunction() {
   const { data } = await supabase.rpc("get_test_2");
-  console.log(data);
+  // console.log(data);
   return data;
 }

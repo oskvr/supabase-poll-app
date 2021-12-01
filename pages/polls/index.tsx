@@ -16,9 +16,11 @@ import {
   TabPanels,
   Tabs,
   Text,
+  VStack,
 } from "@chakra-ui/react";
 import { NextPage } from "next";
 import NextLink from "next/link";
+import { useEffect } from "react";
 
 export function PollListItem({ poll }: { poll: Poll }) {
   const betterDate = new Date(poll.created_at).toLocaleDateString();
@@ -64,310 +66,9 @@ export function PollListItem({ poll }: { poll: Poll }) {
     </ListItem>
   );
 }
-const mockPolls: Poll[] = [
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-  {
-    title: "Poll Hej",
-    user_validation_mode: "IP",
-    id: 1,
-    created_at: "2020-01-01",
-    is_closed: false,
-    is_private: false,
-    options: [
-      {
-        id: 1,
-        created_at: "2020-01-01",
-        description: "Hej",
-        votes: [
-          {
-            created_at: "2020-01-01",
-            id: 1,
-            ip_address: "127.0.0.01",
-            option_id: 2,
-          },
-        ],
-      },
-    ],
-  },
-];
+
 const LandingPage: NextPage = () => {
   const polls = usePolls({ column: "title", isAscending: true });
-
   if (!polls) {
     return <PageSpinner />;
   }
@@ -382,19 +83,12 @@ const LandingPage: NextPage = () => {
 
       <Tabs>
         <TabList>
+          <Tab>New</Tab>
           <Tab>Most popular</Tab>
           <Tab>Trending</Tab>
-          <Tab>New</Tab>
         </TabList>
 
         <TabPanels>
-          <TabPanel>
-            <List>
-              {mockPolls.map((poll) => {
-                return <PollListItem key={poll.id} poll={poll} />;
-              })}
-            </List>
-          </TabPanel>
           <TabPanel>
             <List>
               {polls.map((poll) => {
@@ -403,7 +97,10 @@ const LandingPage: NextPage = () => {
             </List>
           </TabPanel>
           <TabPanel>
-            <img src="https://i.ytimg.com/vi/I-CaC_43cZI/maxresdefault.jpg" />
+            <PlaceholderMessage message="Show popular polls here" />
+          </TabPanel>
+          <TabPanel>
+            <PlaceholderMessage message="Show trending polls here" />
           </TabPanel>
         </TabPanels>
       </Tabs>
@@ -412,3 +109,18 @@ const LandingPage: NextPage = () => {
 };
 
 export default LandingPage;
+
+function PlaceholderMessage({ message }: { message: string }) {
+  return (
+    <VStack h="xl" py={20}>
+      <Heading
+        fontWeight="thin"
+        color="blackAlpha.500"
+        _dark={{ color: "whiteAlpha.400" }}
+      >
+        {message}
+      </Heading>
+      ;
+    </VStack>
+  );
+}

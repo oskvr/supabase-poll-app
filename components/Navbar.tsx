@@ -56,18 +56,17 @@ export default function Navbar() {
     router.push(`/polls/search?title=${searchQuery}`);
   }
   return (
-    <HStack
+    <Box
       as="nav"
-      bg="white"
       p="2"
       zIndex="100"
-      border="1px"
-      borderColor="gray.200"
-      _dark={{ borderColor: "gray.700", bg: "gray.800" }}
+      borderBottom="1px"
+      borderColor="blackAlpha.200"
+      _dark={{ borderColor: "whiteAlpha.200" }}
     >
-      <HStack spacing="20" px="20">
+      <HStack spacing={{ base: 5, md: 20 }} px="20">
         <Box>
-          <NextLink href="/">
+          <NextLink href="/poll">
             <Link _hover={{ textDecoration: "none" }} color="blue.500">
               <HStack align="baseline" role="group">
                 <Heading>OnlinePoll</Heading>
@@ -104,6 +103,6 @@ export default function Navbar() {
           </form>
         </Box>
       </HStack>
-    </HStack>
+    </Box>
   );
 }
